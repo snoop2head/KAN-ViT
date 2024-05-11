@@ -24,6 +24,7 @@ import jax.numpy as jnp
 from chex import Array
 
 from utils import fixed_sincos2d_embeddings
+from kan import KANLayer
 
 DenseGeneral = partial(nn.DenseGeneral, kernel_init=init.truncated_normal(0.02))
 Dense = partial(nn.Dense, kernel_init=init.truncated_normal(0.02))
@@ -46,6 +47,8 @@ class ViTBase:
     dropout: float = 0.0
     droppath: float = 0.0
     grad_ckpt: bool = False
+    use_kan: bool = False
+    polynomial_degree: int = 8
 
     @property
     def kwargs(self) -> dict[str, Any]:
@@ -119,7 +122,10 @@ class FeedForward(ViTBase, nn.Module):
 class ViTLayer(ViTBase, nn.Module):
     def setup(self):
         self.attn = Attention(**self.kwargs)
-        self.ff = FeedForward(**self.kwargs)
+        if self.use_kan:
+            self.ff = KANLayer(self.polynomial_degree)
+        else:
+            self.ff = FeedForward(**self.kwargs)
 
         self.norm1 = nn.LayerNorm()
         self.norm2 = nn.LayerNorm()

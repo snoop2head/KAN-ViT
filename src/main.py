@@ -139,6 +139,8 @@ if __name__ == "__main__":
     parser.add_argument("--lr-decay", type=float, default=1.0)
     parser.add_argument("--clip-grad", type=float, default=0.0)
     parser.add_argument("--grad-accum", type=int, default=1)
+    parser.add_argument("--use-kan", action="store_true", default=False)
+    parser.add_argument("--polynomial-degree", type=int, default=8)
 
     parser.add_argument("--warmup-steps", type=int, default=10000)
     parser.add_argument("--training-steps", type=int, default=200000)
